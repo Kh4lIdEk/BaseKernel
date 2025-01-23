@@ -1,21 +1,107 @@
-/*
-Copyright (C) 2015-2019 The University of Notre Dame
-This software is distributed under the GNU General Public License.
-See the file LICENSE for details.
-*/
+/****************************************************************
+* Copyright (C) 2015-2019 The University of Notre Dame
+* This software is distributed under the GNU General Public License.
+* See the file LICENSE for details.
+*****************************************************************/
+/**
+ * @file interrupt.c
+ * @brief Interrupt handling and initialization module
+ *
+ * This module provides functions to initialize, register, and manage 
+ * interrupts in a kernel environment. It includes exception handling,
+ * hardware interrupt handling, and debugging tools to monitor interrupt
+ * activity.
+ * 
+ * Core features:
+ * - Initialization of the interrupt system
+ * - Dynamic registration of interrupt handlers
+ * - Management of spurious and hardware interrupts
+ * - Exception handling with memory and stack checks
+ * 
+ * This module ensures proper interrupt handling, which is critical
+ * for system responsiveness and stability.
+ *
+ * @author Khalid ElKoussami, Hamza Aarab, Abdelali Chattaoui, Anas Azouane, ElHassan Labyad
+ * @date 23/01/2025
+ *
+ */
 
 #ifndef INTERRUPT_H
 #define INTERRUPT_H
 
-typedef void (*interrupt_handler_t) (int intr, int code);
+#include "interrupt.h"
+#include "console.h"
+#include "pic.h"
+#include "process.h"
+#include "kernelcore.h"
+#include "x86.h"
 
+/**
+ * @brief Initializes the interrupt system
+ *
+ * The interrupt_init() function sets up the interrupt descriptor table (IDT),
+ * initializes the programmable interrupt controller (PIC), and configures
+ * handlers for hardware and exception interrupts.
+ */
 void interrupt_init();
-void interrupt_register(int i, interrupt_handler_t handler);
+
+/**
+ * @brief Handles registered interrupts
+ *
+ * The interrupt_handler() function is called when an interrupt is triggered.
+ * It executes the appropriate handler function for the given interrupt.
+ *
+ * @param i The interrupt number
+ * @param code Optional error code associated with the interrupt
+ */
+void interrupt_handler(int i, int code);
+
+/**
+ * @brief Enables a specific interrupt
+ *
+ * The interrupt_enable() function enables the specified interrupt in the
+ * PIC or other hardware interrupt controller.
+ *
+ * @param i The interrupt number to enable
+ */
 void interrupt_enable(int i);
+
+/**
+ * @brief Disables a specific interrupt
+ *
+ * The interrupt_disable() function disables the specified interrupt in the
+ * PIC or other hardware interrupt controller.
+ *
+ * @param i The interrupt number to disable
+ */
 void interrupt_disable(int i);
+
+/**
+ * @brief Blocks all interrupts
+ *
+ * The interrupt_block() function disables interrupts globally, ensuring no
+ * further interrupts are processed until re-enabled.
+ */
 void interrupt_block();
+
+/**
+ * @brief Unblocks all interrupts
+ *
+ * The interrupt_unblock() function enables interrupts globally, allowing
+ * the processing of pending or new interrupts.
+ */
 void interrupt_unblock();
+
+/**
+ * @brief Waits for an interrupt
+ *
+ * The interrupt_wait() function enables interrupts and halts the processor
+ * until the next interrupt occurs.
+ */
 void interrupt_wait();
+
+
+
 
 /*
 PC Interrupts:
@@ -38,5 +124,4 @@ IRQ	Interrupt
 15	47	ATA 1
 */
 
-
-#endif
+#endif /* INTERRUPT_H */
